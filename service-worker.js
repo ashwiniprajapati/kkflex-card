@@ -4,7 +4,10 @@ const urlsToCache = [
   '/index.html',
   '/app.js',
   '/manifest.json',
-  'https://cdn.tailwindcss.com',
+  '/dist/output.css',
+  '/data.profile.json',
+  '/assets/favicon.png',
+  '/assets/logo.png',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];

@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   
   // Register service worker for PWA
   registerServiceWorker();
+  
+  // Show install bar on mobile (e.g. iOS) where beforeinstallprompt doesn't fire
+  maybeShowInstallBarMobile();
 });
 
 // ==========================================
@@ -291,37 +294,82 @@ function showNotification(message) {
 }
 
 // ==========================================
-// PWA INSTALLATION
+// PWA INSTALLATION (install bar – use like an app on mobile)
 // ==========================================
+const PWA_DISMISS_KEY = 'pwaInstallDismissedAt';
+const PWA_DISMISS_DAYS = 7;
+
 let deferredPrompt;
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true ||
+    document.referrer.includes('android-app://');
+}
+
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function wasInstallDismissedRecently() {
+  try {
+    const raw = localStorage.getItem(PWA_DISMISS_KEY);
+    if (!raw) return false;
+    const at = parseInt(raw, 10);
+    if (isNaN(at)) return false;
+    return (Date.now() - at) < PWA_DISMISS_DAYS * 24 * 60 * 60 * 1000;
+  } catch (_) {
+    return false;
+  }
+}
+
+function showInstallBar() {
+  if (isStandalone() || wasInstallDismissedRecently()) return;
+  const el = document.getElementById('installPrompt');
+  const hint = document.getElementById('installPromptHint');
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (hint) hint.classList.toggle('hidden', !isIOS);
+  el.classList.remove('hidden');
+  el.classList.add('block');
+}
+
+function hideInstallBar() {
+  const el = document.getElementById('installPrompt');
+  el.classList.add('hidden');
+  el.classList.remove('block');
+}
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  
-  // Show install prompt
-  const installPrompt = document.getElementById('installPrompt');
-  installPrompt.classList.remove('hidden');
-  installPrompt.classList.add('flex');
+  showInstallBar();
 });
+
+// On mobile (e.g. iOS) beforeinstallprompt never fires – show bar after load
+function maybeShowInstallBarMobile() {
+  if (isStandalone() || wasInstallDismissedRecently()) return;
+  if (!isMobile()) return;
+  if (deferredPrompt) return; // already shown by beforeinstallprompt
+  setTimeout(showInstallBar, 1500);
+}
 
 function installPWA() {
   if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-              showNotification('App installed successfully!');
-          }
-          deferredPrompt = null;
-          dismissInstall();
-      });
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') showNotification('Added to Home Screen!');
+      deferredPrompt = null;
+      dismissInstall();
+    });
   }
+  // On iOS there is no native prompt; user must use Share → Add to Home Screen (hint is shown in bar)
 }
 
 function dismissInstall() {
-  const installPrompt = document.getElementById('installPrompt');
-  installPrompt.classList.remove('flex');
-  installPrompt.classList.add('hidden');
+  try {
+    localStorage.setItem(PWA_DISMISS_KEY, String(Date.now()));
+  } catch (_) {}
+  hideInstallBar();
 }
 
 // ==========================================

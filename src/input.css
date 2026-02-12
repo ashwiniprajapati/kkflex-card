@@ -44,3 +44,8 @@ body {
   animation: pulse-border 2s ease-in-out infinite;
 }
 
+/* Safe area for install bar on notched phones */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0.75rem);
+}
+
