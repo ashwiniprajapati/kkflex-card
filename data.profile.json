@@ -1,0 +1,86 @@
+{
+  "name": "Jayesh Prajapati",
+  "title": "Founder & Owner",
+  "company": "KK Flex",
+  "email": "info@kkflex.com",
+  "phone": "+91 9714422777",
+  "phoneRaw": "+919714865265",
+  "website": "kkflex.com",
+  "websiteUrl": "https://kkflex.com",
+  "cardUrl": "https://kkflex.com",
+  "linkedin": "https://linkedin.com/company/kkflex",
+  "twitter": "https://twitter.com/kkflex",
+  "instagram": "https://instagram.com/kkflex",
+  "facebook": "https://facebook.com/kkflex",
+  "youtube": "https://youtube.com/@kkflex",
+  "whatsapp": "https://wa.me/919714422777",
+  "photo": "assets/logo.png",
+  "catalogUrl": "assets/catalog.pdf",
+  "catalogFilename": "KK_Flex_Catalog.pdf",
+
+  "profile": {
+    "name": "Jayesh Prajapati",
+    "title": "Founder & Owner",
+    "company": "KK Flex",
+    "tagline": "Trusted Name for Woven Sack Flexo Printing Machine & Conversion Machines",
+    "avatar": "assets/logo.png",
+    "phone": "+91 9714422777",
+    "email": "info@kkflex.in",
+    "website": "https://kkflex.com",
+    "location": "B299/G1, GIDC, Makarpura Industrial Estate, Near BSNL Office, Vadodara-390010, Gujarat, India",
+    "locationUrl": "https://maps.app.goo.gl/8tzwMgXXaLuZw68x9"
+  },
+  "catalog": {
+    "label": "Product & Services Catalog",
+    "url": "assets/catalog.pdf"
+  },
+  "socialLinks": [
+    {
+      "id": "facebook",
+      "label": "Facebook",
+      "url": "https://facebook.com/kkflex"
+    },
+    {
+      "id": "instagram",
+      "label": "Instagram",
+      "url": "https://instagram.com/kkflex"
+    },
+    {
+      "id": "linkedin",
+      "label": "LinkedIn",
+      "url": "https://linkedin.com/company/kkflex"
+    },
+    {
+      "id": "twitter",
+      "label": "Twitter",
+      "url": "https://twitter.com/kkflex"
+    },
+    {
+      "id": "youtube",
+      "label": "YouTube",
+      "url": "https://youtube.com/@kkflex"
+    },
+    {
+      "id": "whatsapp",
+      "label": "WhatsApp",
+      "url": "https://wa.me/919714422777"
+    }
+  ],
+  "share": {
+    "title": "KK Flex Digital Visiting Card",
+    "text": "Save my digital visiting card with all KK Flex contact details and quick links.",
+    "url": "https://kkflex.com"
+  },
+  "vcard": {
+    "firstName": "Jayesh",
+    "lastName": "Prajapati",
+    "organization": "KK Flex",
+    "role": "Founder & Owner",
+    "street": "Makarpura Industrial Estate, Near BSNL Office",
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "postalCode": "390010",
+    "country": "India"
+  }
+}
+

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Generator - KK Flex</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+        .preview {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        .icon-preview {
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #a33c3c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #8b3232;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #334155;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .info {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #a33c3c;
+        }
+        .info h3 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 PWA Icon Generator</h1>
+        <p>Generate icons for your KK Flex digital business card PWA</p>
+        
+        <label for="companyName">Company Name (or Initials)</label>
+        <input type="text" id="companyName" value="KK FLEX" maxlength="10">
+        
+        <div class="preview">
+            <div class="icon-preview">
+                <canvas id="canvas192" width="192" height="192"></canvas>
+                <div>
+                    <button onclick="downloadIcon(192)">Download 192x192</button>
+                </div>
+            </div>
+            <div class="icon-preview">
+                <canvas id="canvas512" width="512" height="512"></canvas>
+                <div>
+                    <button onclick="downloadIcon(512)">Download 512x512</button>
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="downloadBoth()">📥 Download Both Icons</button>
+        
+        <div class="info">
+            <h3>📝 Instructions</h3>
+            <ol>
+                <li>Enter your company name or initials above</li>
+                <li>Download both icons (192x192 and 512x512)</li>
+                <li>Save them as <code>icon-192.png</code> and <code>icon-512.png</code></li>
+                <li>Place them in the root directory with your other files</li>
+                <li>Deploy to Vercel!</li>
+            </ol>
+            <p style="margin-bottom: 0;"><strong>Pro tip:</strong> For a professional look, you can replace these with your actual company logo using any image editor or design tool.</p>
+        </div>
+    </div>
+
+    <script>
+        function drawIcon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const ctx = canvas.getContext('2d');
+            const text = document.getElementById('companyName').value || 'KK FLEX';
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#1e293b');
+            gradient.addColorStop(0.5, '#334155');
+            gradient.addColorStop(1, '#1e293b');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Accent border
+            ctx.strokeStyle = '#a33c3c';
+            ctx.lineWidth = size * 0.04;
+            ctx.strokeRect(size * 0.02, size * 0.02, size * 0.96, size * 0.96);
+            
+            // Text
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Calculate font size based on text length
+            const fontSize = text.length <= 4 ? size * 0.35 : size * 0.25;
+            ctx.font = `bold ${fontSize}px "Arial", sans-serif`;
+            
+            ctx.fillText(text, size / 2, size / 2);
+            
+            // Small subtitle
+            ctx.fillStyle = '#a33c3c';
+            ctx.font = `${size * 0.08}px "Arial", sans-serif`;
+            ctx.fillText('INDUSTRIES', size / 2, size * 0.75);
+        }
+        
+        function downloadIcon(size) {
+            const canvas = document.getElementById(`canvas${size}`);
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function downloadBoth() {
+            downloadIcon(192);
+            setTimeout(() => downloadIcon(512), 500);
+        }
+        
+        // Update icons when text changes
+        document.getElementById('companyName').addEventListener('input', () => {
+            drawIcon(192);
+            drawIcon(512);
+        });
+        
+        // Initial draw
+        drawIcon(192);
+        drawIcon(512);
+    </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles previously in index.html */
+body {
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.pattern-dots {
+  background-image: radial-gradient(circle, rgba(163, 60, 60, 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* White → logo tint gradient (theme: white + #a33c3c) */
+.gradient-metal {
+  background: linear-gradient(135deg, #ffffff 0%, #fef5f5 35%, rgba(163, 60, 60, 0.08) 100%);
+}
+
+.text-shadow-glow {
+  text-shadow: 0 0 20px rgba(163, 60, 60, 0.5);
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: translateY(-8px);
+}
+
+@keyframes pulse-border {
+  0%,
+  100% {
+    border-color: rgba(163, 60, 60, 0.3);
+  }
+  50% {
+    border-color: rgba(163, 60, 60, 0.8);
+  }
+}
+
+.pulse-border {
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
