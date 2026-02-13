@@ -1,0 +1,20 @@
+{
+  "name": "kkflex-card",
+  "version": "1.0.0",
+  "description": "A modern, professional Progressive Web App (PWA) digital business card for KK Flex Industries - Machine Manufacturing Company.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:css",
+    "build:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/input.css -o ./dist/output.css --minify",
+    "dev:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/input.css -o ./dist/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6"
+  }
+}
