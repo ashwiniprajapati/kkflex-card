@@ -43,13 +43,15 @@
                     <!-- Logo/Profile Image -->
                     <div class="mb-6 flex justify-center">
                         <div class="relative">
-                            <div class="w-32 h-32 rounded-full border-4 border-orange-500 pulse-border bg-white flex items-center justify-center overflow-hidden">
+                            <div class="bg-white flex items-center justify-center 
+                            overflow-hidden">
                                 <!-- Replace with actual logo -->
                                 <img id="profileImage" src="" alt="KK Flex Logo" class="w-full h-full object-contain p-2 hidden">
                                 <svg class="w-16 h-16 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
                                 </svg>
                             </div>
+                            <p class="text-industrial-600 text-sm font-medium tracking-wide">Manufacturer & Exporter · Vadodara, Gujarat</p>
                         </div>
                     </div>
                     
@@ -63,6 +65,22 @@
                     <p id="cardCompany" class="text-industrial-600 text-lg font-medium tracking-widest">
                         KK FLEX INDUSTRIES
                     </p>
+                </div>
+            </div>
+            
+            <!-- Premium stats strip (experience · machines · established) -->
+            <div id="statsStrip" class="grid grid-cols-3 divide-x divide-slate-500/50 border-t border-b border-slate-500/50 bg-slate-800/95">
+                <div class="flex flex-col items-center justify-center py-4 px-3">
+                    <span id="statsExperience" class="text-xl sm:text-2xl font-bold tracking-tight text-sky-400">18+</span>
+                    <span class="text-[10px] sm:text-xs font-semibold tracking-widest text-slate-400 uppercase mt-0.5">Yrs. Exp.</span>
+                </div>
+                <div class="flex flex-col items-center justify-center py-4 px-3">
+                    <span id="statsMachineInfo" class="text-xl sm:text-2xl font-bold tracking-tight text-sky-400">4 & 6</span>
+                    <span class="text-[10px] sm:text-xs font-semibold tracking-widest text-slate-400 uppercase mt-0.5">Colour Mach.</span>
+                </div>
+                <div class="flex flex-col items-center justify-center py-4 px-3">
+                    <span id="statsEstablished" class="text-xl sm:text-2xl font-bold tracking-tight text-sky-400">2015</span>
+                    <span class="text-[10px] sm:text-xs font-semibold tracking-widest text-slate-400 uppercase mt-0.5">Est. Year</span>
                 </div>
             </div>
             
