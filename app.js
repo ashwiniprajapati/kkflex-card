@@ -76,6 +76,25 @@ function updateCardData() {
       img.src = cardData.photo;
       img.classList.remove('hidden');
   }
+
+  // Premium stats strip (experience, machineInfo, established)
+  const strip = document.getElementById('statsStrip');
+  if (strip && (cardData.experience || cardData.machineInfo || cardData.established)) {
+      strip.classList.remove('hidden');
+      if (cardData.experience) {
+          const num = cardData.experience.match(/\d+/);
+          document.getElementById('statsExperience').textContent = num ? num[0] + '+' : cardData.experience;
+      }
+      if (cardData.machineInfo) {
+          document.getElementById('statsMachineInfo').textContent = cardData.machineInfo.replace(/\s*Machine\s*$/i, '').trim() || cardData.machineInfo;
+      }
+      if (cardData.established) {
+          const year = cardData.established.match(/\d{4}/);
+          document.getElementById('statsEstablished').textContent = year ? year[0] : cardData.established;
+      }
+  } else if (strip) {
+      strip.classList.add('hidden');
+  }
 }
 
 // ==========================================
