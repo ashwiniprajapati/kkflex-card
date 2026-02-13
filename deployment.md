@@ -83,10 +83,21 @@ git push -u origin main
 
 Now whenever you push to GitHub, Vercel will automatically deploy your changes!
 
-**If production shows an old/different UI:** The app uses a service worker that caches files. After you deploy:
-1. In `service-worker.js`, the cache version (e.g. `kkflex-card-v4`) is bumped when we make UI changes—redeploy so clients get the new version.
-2. Users may need to **hard refresh** (Ctrl+Shift+R or Cmd+Shift+R) or clear site data once so the new cache takes over.
-3. New visitors will get the latest files automatically.
+### 4. Visitor & page view analytics
+
+To count visitors and page views:
+
+1. **Enable Web Analytics** in the [Vercel Dashboard](https://vercel.com/dashboard): open your project → **Analytics** tab → **Enable**.
+2. The project already includes the analytics script in `index.html` (script tag for static sites). No code change needed.
+3. **Redeploy** so the `/_vercel/insights/script.js` route is available. Data will appear under your project’s **Analytics** tab after visits.
+
+*Note: This is a static HTML site, so we use the script-tag method. The `import { Analytics } from "@vercel/analytics/next"` pattern is for Next.js apps only.*
+
+**If production shows an old/different UI:** The app uses a service worker that caches files. We’ve made two changes so production matches local after deploy:
+1. **Cache version** in `service-worker.js` is bumped (e.g. `kkflex-card-v5`) when we change the UI—redeploy so clients get the new worker.
+2. **Network-first for HTML:** The service worker now uses a *network-first* strategy for the main page and itself, so each load tries the server first and only falls back to cache when offline. Deployed updates should appear without a hard refresh.
+3. **No-cache for HTML on Vercel:** `vercel.json` sets `Cache-Control: no-cache` for `/` and `/index.html` so the server doesn’t tell browsers to keep old HTML.
+4. After redeploying, do one **hard refresh** (Ctrl+Shift+R or Cmd+Shift+R) on the production URL if you still see the old UI; after that, new visits should get the latest UI.
 
 ---
 

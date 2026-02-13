@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kkflex-card-v4';
+const CACHE_NAME = 'kkflex-card-v5';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -34,33 +34,31 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Fetch resources from cache or network
+// Fetch: network-first for HTML and SW so production always gets latest; cache-first for assets
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  const isHtml = event.request.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html';
+  const isSw = url.pathname.endsWith('service-worker.js');
+
+  if (isHtml || isSw) {
+    // Always try network first so deployed updates show immediately
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => response)
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        
-        // Clone the request
+        if (response) return response;
         const fetchRequest = event.request.clone();
-        
         return fetch(fetchRequest).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Clone the response
+          if (!response || response.status !== 200 || response.type !== 'basic') return response;
           const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-          
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
           return response;
         });
       })
