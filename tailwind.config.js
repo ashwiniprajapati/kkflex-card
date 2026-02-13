@@ -31,6 +31,8 @@ module.exports = {
           500: '#a33c3c',
           600: '#8b3232',
         },
+        whatsapp: '#25D366',
+        'whatsapp-hover': '#20BD5A',
       },
       animation: {
         'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
