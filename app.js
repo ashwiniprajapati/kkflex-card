@@ -296,8 +296,8 @@ function showNotification(message) {
 // ==========================================
 // PWA INSTALLATION (install bar – use like an app on mobile)
 // ==========================================
-const PWA_DISMISS_KEY = 'pwaInstallDismissedAt';
-const PWA_DISMISS_DAYS = 7;
+// Dismiss only for current session so bar reappears on next visit until user installs
+const PWA_DISMISS_SESSION_KEY = 'pwaInstallDismissedSession';
 
 let deferredPrompt;
 
@@ -311,24 +311,25 @@ function isMobile() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
-function wasInstallDismissedRecently() {
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+/** True only if user dismissed the bar in this tab/session. Resets on new visit. */
+function wasInstallDismissedThisSession() {
   try {
-    const raw = localStorage.getItem(PWA_DISMISS_KEY);
-    if (!raw) return false;
-    const at = parseInt(raw, 10);
-    if (isNaN(at)) return false;
-    return (Date.now() - at) < PWA_DISMISS_DAYS * 24 * 60 * 60 * 1000;
+    return sessionStorage.getItem(PWA_DISMISS_SESSION_KEY) === '1';
   } catch (_) {
     return false;
   }
 }
 
 function showInstallBar() {
-  if (isStandalone() || wasInstallDismissedRecently()) return;
+  // Only hide if already running as installed app or dismissed this session
+  if (isStandalone() || wasInstallDismissedThisSession()) return;
   const el = document.getElementById('installPrompt');
   const hint = document.getElementById('installPromptHint');
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  if (hint) hint.classList.toggle('hidden', !isIOS);
+  if (hint) hint.classList.toggle('hidden', !isIOS());
   el.classList.remove('hidden');
   el.classList.add('block');
 }
@@ -345,9 +346,9 @@ window.addEventListener('beforeinstallprompt', (e) => {
   showInstallBar();
 });
 
-// On mobile (e.g. iOS) beforeinstallprompt never fires – show bar after load
+// On mobile (e.g. iOS) beforeinstallprompt never fires – show bar after load, every visit
 function maybeShowInstallBarMobile() {
-  if (isStandalone() || wasInstallDismissedRecently()) return;
+  if (isStandalone() || wasInstallDismissedThisSession()) return;
   if (!isMobile()) return;
   if (deferredPrompt) return; // already shown by beforeinstallprompt
   setTimeout(showInstallBar, 1500);
@@ -356,18 +357,33 @@ function maybeShowInstallBarMobile() {
 function installPWA() {
   if (deferredPrompt) {
     deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') showNotification('Added to Home Screen!');
-      deferredPrompt = null;
-      dismissInstall();
-    });
+    deferredPrompt.userChoice
+      .then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          showNotification('Added to Home Screen!');
+          hideInstallBar();
+        }
+        deferredPrompt = null;
+      })
+      .catch(() => {
+        deferredPrompt = null;
+      });
+    return;
   }
-  // On iOS there is no native prompt; user must use Share → Add to Home Screen (hint is shown in bar)
+  // iOS: no native prompt; show instructions
+  if (isIOS()) {
+    showNotification('Tap Share (↑) then "Add to Home Screen"');
+    const hint = document.getElementById('installPromptHint');
+    if (hint) {
+      hint.classList.remove('hidden');
+      hint.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
 }
 
 function dismissInstall() {
   try {
-    localStorage.setItem(PWA_DISMISS_KEY, String(Date.now()));
+    sessionStorage.setItem(PWA_DISMISS_SESSION_KEY, '1');
   } catch (_) {}
   hideInstallBar();
 }
