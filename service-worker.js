@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kkflex-card-v1';
+const CACHE_NAME = 'kkflex-card-v3';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -8,21 +8,28 @@ const urlsToCache = [
   '/data.profile.json',
   '/assets/favicon.png',
   '/assets/logo.png',
+  '/assets/icon-192.png',
+  '/assets/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];
 
-// Install service worker and cache resources
+// Install service worker and cache resources (one-by-one so one 404 doesn't break all)
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        return Promise.allSettled(
+          urlsToCache.map((url) =>
+            cache.add(url).catch((err) => {
+              console.warn('Cache skip (failed):', url, err.message);
+            })
+          )
+        );
       })
-      .catch((error) => {
-        console.log('Cache failed:', error);
-      })
+      .then(() => console.log('Cache preload done'))
+      .catch((error) => console.log('Cache failed:', error))
   );
   self.skipWaiting();
 });
