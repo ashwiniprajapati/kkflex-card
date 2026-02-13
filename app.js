@@ -168,7 +168,7 @@ function closeInquiryModal() {
   modal.classList.add('hidden');
 }
 
-function submitEnquiry(event) {
+function submitEnquiry(event, channel) {
   event.preventDefault();
   const form = document.getElementById('inquiryForm');
   const name = form.inquiryName.value.trim();
@@ -176,6 +176,12 @@ function submitEnquiry(event) {
   const phone = form.inquiryPhone.value.trim();
   const subject = form.inquirySubject.value.trim();
   const message = form.inquiryMessage.value.trim();
+
+  // Validate required fields
+  if (!name || !email || !subject || !message) {
+    showNotification('Please fill in all required fields.');
+    return;
+  }
 
   const body = [
     `Name: ${name}`,
@@ -187,12 +193,21 @@ function submitEnquiry(event) {
     message
   ].join('\n');
 
-  const mailtoUrl = `mailto:${cardData.email || 'contact@kkflex.in'}?subject=${encodeURIComponent('Enquiry: ' + subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailtoUrl;
+  if (channel === 'whatsapp') {
+    const waBase = cardData.whatsapp || 'https://wa.me/919714422777';
+    const waNum = waBase.replace(/^https?:\/\/wa\.me\//i, '').split('?')[0];
+    const waText = encodeURIComponent(body);
+    const waUrl = `https://wa.me/${waNum}?text=${waText}`;
+    window.open(waUrl, '_blank');
+    showNotification('Opening WhatsApp to send enquiry...');
+  } else {
+    const mailtoUrl = `mailto:${cardData.email || 'contact@kkflex.in'}?subject=${encodeURIComponent('Enquiry: ' + subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
+    showNotification('Opening your email client to send enquiry...');
+  }
 
   closeInquiryModal();
   form.reset();
-  showNotification('Opening your email client to send enquiry...');
 }
 
 document.getElementById('inquiryModal')?.addEventListener('click', function(e) {
