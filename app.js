@@ -61,6 +61,29 @@ function updateCardData() {
   document.getElementById('emailLink').href = `mailto:${cardData.email}`;
   document.getElementById('phoneLink').href = `tel:${cardData.phoneRaw}`;
   document.getElementById('websiteLink').href = cardData.websiteUrl;
+
+  // Address (from profile.location / profile.locationUrl) — click opens Google Maps
+  const location = cardData.location ?? cardData.profile?.location;
+  let locationUrl = cardData.locationUrl ?? cardData.profile?.locationUrl;
+  if (location && !locationUrl) {
+    locationUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(location);
+  }
+  const addressSection = document.getElementById('addressSection');
+  const addressLink = document.getElementById('addressLink');
+  const cardAddress = document.getElementById('cardAddress');
+  if (addressSection && cardAddress) {
+    if (location) {
+      addressSection.classList.remove('hidden');
+      cardAddress.textContent = location;
+      if (addressLink) {
+        addressLink.href = locationUrl || '#';
+        addressLink.classList.remove('pointer-events-none');
+        addressLink.setAttribute('aria-label', 'View address on Google Maps');
+      }
+    } else {
+      addressSection.classList.add('hidden');
+    }
+  }
   
   // Update social media links
   document.getElementById('linkedinLink').href = cardData.linkedin;
@@ -77,8 +100,15 @@ function updateCardData() {
       img.classList.remove('hidden');
   }
 
-  // Premium stats strip (experience, machineInfo, established)
+  // Premium stats strip (tagline + experience, machineInfo, established)
   const strip = document.getElementById('statsStrip');
+  const taglineEl = document.getElementById('statsTagline');
+  if (taglineEl && (cardData.profile?.tagline || cardData.tagline)) {
+    const tagline = (cardData.profile?.tagline || cardData.tagline)
+      .replace(/ & /g, ' <br class="sm:hidden"/> &amp; ');
+    taglineEl.innerHTML = tagline;
+    taglineEl.classList.remove('hidden');
+  }
   if (strip && (cardData.experience || cardData.machineInfo || cardData.established)) {
       strip.classList.remove('hidden');
       if (cardData.experience) {
@@ -109,6 +139,70 @@ function initQRCode() {
       colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.H
   });
+}
+
+function getQRCodeDataUrl() {
+  const container = document.getElementById('qrcode');
+  if (!container) return null;
+  const canvas = container.querySelector('canvas');
+  const img = container.querySelector('img');
+  const firstChild = container.firstElementChild;
+  if (canvas) return canvas.toDataURL('image/png');
+  if (img && img.src && img.src.startsWith('data:')) return img.src;
+  if (firstChild && firstChild.tagName === 'CANVAS') return firstChild.toDataURL('image/png');
+  return null;
+}
+
+function downloadQRCode() {
+  const dataUrl = getQRCodeDataUrl();
+  if (!dataUrl) {
+    showNotification('QR code not ready yet');
+    return;
+  }
+  const link = document.createElement('a');
+  link.download = (cardData.company || 'card').replace(/\s+/g, '_') + '_QR.png';
+  link.href = dataUrl;
+  link.click();
+  showNotification('QR code downloaded');
+}
+
+function shareQRCode() {
+  const dataUrl = getQRCodeDataUrl();
+  if (!dataUrl) {
+    showNotification('QR code not ready yet');
+    return;
+  }
+  const fileName = (cardData.company || 'card').replace(/\s+/g, '_') + '_QR.png';
+  const title = (cardData.company || 'Digital card') + ' – QR Code';
+  const text = cardData.cardUrl ? 'Scan to open: ' + cardData.cardUrl : '';
+
+  if (navigator.share) {
+    fetch(dataUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], fileName, { type: 'image/png' });
+        const shareOpts = { title: title, text: text };
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          shareOpts.files = [file];
+        }
+        return navigator.share(shareOpts);
+      })
+      .then(() => showNotification('QR code shared'))
+      .catch(err => {
+        if (err.name === 'AbortError') return;
+        shareQRCodeFallback(dataUrl, fileName, title, text);
+      });
+  } else {
+    shareQRCodeFallback(dataUrl, fileName, title, text);
+  }
+}
+
+function shareQRCodeFallback(dataUrl, fileName, title, text) {
+  const link = document.createElement('a');
+  link.download = fileName;
+  link.href = dataUrl;
+  link.click();
+  showNotification('Download the QR image and share it from your device');
 }
 
 // ==========================================
@@ -240,7 +334,7 @@ document.getElementById('inquiryModal')?.addEventListener('click', function(e) {
 // ==========================================
 function shareVia(platform) {
   const shareText = `Check out ${cardData.name}'s digital business card from ${cardData.company}!`;
-  const shareUrl = cardData.cardUrl;
+  const shareUrl = 'https://digicard.kkflex.in';
   
   const urls = {
       whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`,
