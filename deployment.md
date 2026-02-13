@@ -83,6 +83,11 @@ git push -u origin main
 
 Now whenever you push to GitHub, Vercel will automatically deploy your changes!
 
+**If production shows an old/different UI:** The app uses a service worker that caches files. After you deploy:
+1. In `service-worker.js`, the cache version (e.g. `kkflex-card-v4`) is bumped when we make UI changes—redeploy so clients get the new version.
+2. Users may need to **hard refresh** (Ctrl+Shift+R or Cmd+Shift+R) or clear site data once so the new cache takes over.
+3. New visitors will get the latest files automatically.
+
 ---
 
 ## 🔗 Connecting Your Custom Domain (kkflex.in)
